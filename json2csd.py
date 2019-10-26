@@ -45,6 +45,9 @@ def json2csd(jfile, cfile):
     with open(jfile,'r',encoding='utf8') as f:
         jsonfile = json.load(f)
 
+    if "ID" not in jsonfile:
+        print(jfile + " not a cocosstudio json file!")
+        return
     Propert = {}
     Propert["ID"] = jsonfile.pop("ID")
     Propert["Version"] = jsonfile.pop("Version")
@@ -89,6 +92,12 @@ def json2csd(jfile, cfile):
             timeline_list[i]["ScaleFrame"] = timeline_list[i].pop("Frames")
         elif ctype == "IntFrameData":
             timeline_list[i]["IntFrame"] = timeline_list[i].pop("Frames")
+        elif ctype == "TextureFrameData":
+            timeline_list[i]['TextureFrame'] = timeline_list[i].pop("Frames")
+        elif ctype =='BlendFuncFrameData':
+            timeline_list[i]['BlendFuncFrame'] = timeline_list[i].pop("Frames")
+        elif ctype == 'ColorFrameData':
+            timeline_list[i]['ColorFrame'] = timeline_list[i].pop("Frames")
 
     content["Animation"]["Timeline"] = timeline_list
     ObjectData = content["ObjectData"]
@@ -102,8 +111,10 @@ def json2csd(jfile, cfile):
     dom = xml.dom.minidom.parseString(xmlData)
     prettyXmlData = dom.toprettyxml()
 
-    f = open(cfile,'w')
+    f = open(cfile,'w',encoding='utf8')
     f.write(prettyXmlData)
     f.close()
+
+    print("export " + cfile + ' success')
 
 json2csd("ExpNode.json","ExpNode.csd")
